@@ -4,7 +4,7 @@
 #                Tested on Fedora 25.
 #                Derived from Jess Frazelle's Atom Dockerfile: https://raw.githubusercontent.com/jessfraz/dockerfiles/master/atom/Dockerfile
 #
-#  USAGE:
+# USAGE:
 #               # Build image
 #               docker build -t slic3r .
 #
@@ -15,7 +15,7 @@
 #               # allow access to your local X session
 #               xhost local:root
 #
-#  VOLUME MANAGEMENT:
+# VOLUME MANAGEMENT:
 #
 #                     # Remove and wipe settings
 #                     docker volume rm slic3rSettings
@@ -26,10 +26,6 @@
 FROM debian:stretch
 
 RUN apt-get update && apt-get install -y \
-  ca-certificates \
-  curl \
-  bzip2 \
-  unzip \
   freeglut3 \
   libgtk2.0-dev \
   libwxgtk3.0-dev \
@@ -39,24 +35,42 @@ RUN apt-get update && apt-get install -y \
   libgl1-mesa-dri \
   xdg-utils \
   --no-install-recommends \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && apt-get autoremove -y \
+  && apt-get autoclean
 
-RUN groupadd -r slic3r && useradd -r -g slic3r slic3r
-RUN mkdir -p /Slic3r && chown slic3r:slic3r /Slic3r && mkdir /home/slic3r && chown slic3r:slic3r /home/slic3r
+RUN groupadd -r slic3r \
+  && useradd -r -g slic3r slic3r \
+  && mkdir -p /Slic3r \
+  && chown slic3r:slic3r /Slic3r \
+  && mkdir /home/slic3r \
+  && chown slic3r:slic3r /home/slic3r
+
 WORKDIR /Slic3r
-USER slic3r
 
 # curl opts: -s = slient, -S = show errors, -L = follow redirects
-RUN curl -sSL  https://github.com/prusa3d/Slic3r/releases/download/version_1.33.8/Slic3r-1.33.8-prusa3d-linux64-full-201702210906.tar.bz2 > /Slic3r/Slic3r-1.33.8-prusa3d-linux64-full-201702210906.tar.bz2
+RUN apt-get update && apt-get install -y \
+  curl \
+  ca-certificates \
+  unzip \
+  bzip2 \
+  --no-install-recommends \
+  && curl -sSL https://github.com/prusa3d/Slic3r/releases/download/version_1.33.8/Slic3r-1.33.8-prusa3d-linux64-full-201702210906.tar.bz2 > /Slic3r/Slic3r-1.33.8-prusa3d-linux64-full-201702210906.tar.bz2 \
+  && curl -sSL https://github.com/prusa3d/Slic3r-settings/archive/master.zip > /Slic3r/slic3r-settings.zip \
+  && tar -xjf Slic3r-1.33.8-prusa3d-linux64-full-201702210906.tar.bz2 \
+  && unzip -q slic3r-settings.zip \
+  && mkdir -p ~/.Slic3r/ \
+  && cp -a /Slic3r/Slic3r-settings-master/Slic3r\ settings\ MK2/* ~/.Slic3r/ \
+  && rm -f /Slic3r/Slic3r-1.33.8-prusa3d-linux64-full-201702210906.tar.bz2 \
+  && rm -f /Slic3r/slic3r-settings.zip \
+  && rm -rf /var/lib/apt/lists/* \
+  && apt-get purge -y --auto-remove curl ca-certificates unzip bzip2 \
+  && apt-get autoclean \
+  && chown -R slic3r:slic3r /Slic3r /home/slic3r
 
-RUN tar -xjf Slic3r-1.33.8-prusa3d-linux64-full-201702210906.tar.bz2
+USER slic3r
 
-# Add settings for the Prusa i3 MK2
-RUN curl -sSL https://github.com/prusa3d/Slic3r-settings/archive/master.zip > /Slic3r/slic3r-settings.zip
-
-# local settings
 RUN mkdir -p /home/slic3r/.local/share/
-RUN unzip -q slic3r-settings.zip && mkdir -p ~/.Slic3r/ && cp -a /Slic3r/Slic3r-settings-master/Slic3r\ settings\ MK2/* ~/.Slic3r/
 
 VOLUME /home/slic3r/
 
