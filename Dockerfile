@@ -2,7 +2,8 @@
 # AUTHOR:        davidk
 # COMMENTS:      This Dockerfile wraps Prusa3D's fork of Slic3r into a Docker container.
 #                Tested on Fedora 25.
-#                Derived from Jess Frazelle's Atom Dockerfile: https://raw.githubusercontent.com/jessfraz/dockerfiles/master/atom/Dockerfile
+#                Derived from Jess Frazelle's Atom Dockerfile
+#                 https://raw.githubusercontent.com/jessfraz/dockerfiles/master/atom/Dockerfile
 #
 # USAGE:
 #
@@ -40,17 +41,14 @@ RUN apt-get update && apt-get install -y \
   && apt-get autoremove -y \
   && apt-get autoclean
 
-RUN groupadd -r slic3r \
-  && useradd -r -g slic3r slic3r \
+RUN groupadd slic3r \
+  && useradd -g slic3r --create-home --home-dir /home/slic3r slic3r \
   && mkdir -p /Slic3r \
-  && chown slic3r:slic3r /Slic3r \
-  && mkdir /home/slic3r \
-  && chown slic3r:slic3r /home/slic3r
+  && chown slic3r:slic3r /Slic3r
 
 WORKDIR /Slic3r
 ADD getLatestSlic3rRelease.sh /Slic3r
 
-# curl opts: -s = slient, -S = show errors, -L = follow redirects
 RUN apt-get update && apt-get install -y \
   jq \
   curl \
@@ -64,7 +62,8 @@ RUN apt-get update && apt-get install -y \
   && curl -sSL ${latestSlic3r} > ${slic3rReleaseName} \
   && rm -f /Slic3r/releaseInfo.json \
   && curl -sSL https://github.com/prusa3d/Slic3r-settings/archive/master.zip > /Slic3r/slic3r-settings.zip \
-  && mkdir -p /Slic3r/slic3r-dist && tar -xjf ${slic3rReleaseName} -C /Slic3r/slic3r-dist --strip-components 1 \
+  && mkdir -p /Slic3r/slic3r-dist \
+  && tar -xjf ${slic3rReleaseName} -C /Slic3r/slic3r-dist --strip-components 1 \
   && unzip -q slic3r-settings.zip \
   && mkdir -p /home/slic3r/.Slic3r/ \
   && cp -a /Slic3r/Slic3r-settings-master/Slic3r\ settings\ MK2/* /home/slic3r/.Slic3r/ \
@@ -77,6 +76,7 @@ RUN apt-get update && apt-get install -y \
 
 USER slic3r
 
+# Settings storage
 RUN mkdir -p /home/slic3r/.local/share/
 
 VOLUME /home/slic3r/
