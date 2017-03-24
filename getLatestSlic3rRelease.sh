@@ -27,7 +27,7 @@ if [[ "$1" == "url" ]]; then
 
 elif [[ "$1" == "name" ]]; then
 
-  slic3rReleaseName="$(echo ${releaseInfo} | jq -r '.assets[] | .name | select(test("Slic3r-.+?prusa3d-linux64-full.+.tar.bz2"))')"
+  slic3rReleaseName="$(echo ${releaseInfo} | jq -r '.assets[] | .name | select(test("Slic3r-.+prusa3d-linux64-full.+.tar.bz2"))')"
 
   echo $slic3rReleaseName
 
