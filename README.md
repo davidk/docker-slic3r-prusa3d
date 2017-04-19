@@ -10,9 +10,9 @@ The header of the Dockerfile has more documentation, but to grab and run this:
 
 * Settings are persisted into the slic3rSettings volume.
 
-* SELinux might block access to X by slic3r inside the container. Look in /var/log/messages to see if this is happening (and for the relevant commands to fix).
+* SELinux might block access to X by slic3r inside the container. Look in /var/log/messages or /var/log/audit/audit.log to see if this is happening (and for the relevant commands to fix).
 
-* Alternatively, there might be a plain permission error upon trying to access X. Try running `xhost local:root` to fix.
+* Alternatively, there might be a plain permission error upon trying to access X. Try running `xhost local:root` to fix (this is a temporary fix and must be reapplied when restarting the host).
 
 Sample error example (it\'s pretty cryptic, sigh):
 
