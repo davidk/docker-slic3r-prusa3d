@@ -35,3 +35,14 @@ Building:
     Sending build context to Docker daemon 73.73 kB
     Step 1 : FROM debian:stretch
     [ .. truncated ..]
+
+### Convenience Script
+
+A [small script](https://raw.githubusercontent.com/davidk/docker-slic3r-prusa3d/master/slic3r.sh) is provided with the `docker run` command above for placing in a folder referenced by $PATH. It also contains a commented out snippet for entering the container and fixing the persisted volume when things go wrong (or just for poking around).
+
+#### Example
+
+    $ echo $PATH
+    /usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/home/davidk/.local/bin:/home/davidk/bin
+    $ cp slic3r.sh /home/davidk/.local/bin/slic3r
+    $ slic3r
