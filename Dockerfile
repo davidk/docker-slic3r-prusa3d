@@ -1,8 +1,10 @@
-# DESCRIPTION:  Slic3r Prusa3D edition in a Docker container
-# AUTHOR:        davidk
-# COMMENTS:      This Dockerfile wraps Prusa3D's fork of Slic3r into a Docker container.
-#                Tested on Fedora 25.
-#                Derived from Jess Frazelle's Atom Dockerfile
+# DESCRIPTION:    Slic3r Prusa3D edition in a Docker container
+# AUTHOR:         davidk
+# COMMENTS:       This Dockerfile wraps Prusa3D's fork of Slic3r into a Docker
+#                 container with settings for the Prusa i3 MK2.
+#
+#                 Tested on Fedora 25.
+#                 Derived from Jess Frazelle's Atom Dockerfile
 #                 https://raw.githubusercontent.com/jessfraz/dockerfiles/master/atom/Dockerfile
 #
 # USAGE:
