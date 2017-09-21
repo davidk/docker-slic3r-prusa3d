@@ -50,6 +50,7 @@ RUN groupadd slic3r \
 
 WORKDIR /Slic3r
 ADD getLatestSlic3rRelease.sh /Slic3r
+RUN chmod +x /Slic3r/getLatestSlic3rRelease.sh
 
 RUN apt-get update && apt-get install -y \
   jq \
@@ -58,7 +59,6 @@ RUN apt-get update && apt-get install -y \
   unzip \
   bzip2 \
   --no-install-recommends \
-  && chmod +x /Slic3r/getLatestSlic3rRelease.sh \
   && latestSlic3r=$(/Slic3r/getLatestSlic3rRelease.sh url) \
   && slic3rReleaseName=$(/Slic3r/getLatestSlic3rRelease.sh name) \
   && curl -sSL ${latestSlic3r} > ${slic3rReleaseName} \
