@@ -68,7 +68,7 @@ RUN apt-get update && apt-get install -y \
   && tar -xjf ${slic3rReleaseName} -C /Slic3r/slic3r-dist --strip-components 1 \
   && unzip -q slic3r-settings.zip \
   && mkdir -p /home/slic3r/.Slic3r/ \
-  && cp -a /Slic3r/Slic3r-settings-master/Slic3r\ settings\ MK2/* /home/slic3r/.Slic3r/ \
+  && cp -a /Slic3r/Slic3r-settings-master/Slic3r\ settings\ MK2S\ MK2MM\ and\ MK3/* /home/slic3r/.Slic3r/ \
   && rm -f /Slic3r/${slic3rReleaseName} \
   && rm -f /Slic3r/slic3r-settings.zip \
   && rm -rf /var/lib/apt/lists/* \
