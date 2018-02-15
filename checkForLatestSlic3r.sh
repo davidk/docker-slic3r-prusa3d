@@ -7,13 +7,14 @@ set -eu
 LATEST_RELEASE="https://api.github.com/repos/prusa3d/slic3r/releases/latest"
 
 # Get the latest tagged version
-LATEST_VERSION=$(curl -SsL ${LATEST_RELEASE} | jq -r '.tag_name | select(test("^version_[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}(\\-[:alpha]+)?$"))' | tr -d 'version_')
+LATEST_VERSION="$(curl -SsL ${LATEST_RELEASE} | jq -r '.tag_name | select(test("^version_[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}\\-(\\w+){0,1}$"))' | cut -d_ -f2)"
 
 if [[ -z "${LATEST_VERSION}" ]]; then
 	echo "Data garbled?"
 	echo "Resulting output: ${LATEST_VERSION}"
 	exit 1
 fi
+
 
 # Run from the git repository
 cd "$(dirname "$0")";
