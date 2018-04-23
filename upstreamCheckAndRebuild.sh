@@ -64,8 +64,8 @@ for version in ${HUB_VERSIONS}; do
 	fi
 done
 
-if [[ "${BUILT}" == "yes" ]]; then
+if [[ "${BUILT}" != "yes" ]]; then
 	echo "${GH_VERSION} not found in the first 100 results. Triggering a build."
-	triggerDockerBuild "${GH_VERSION}-$(date '+%F')"
+	triggerDockerBuild "${GH_VERSION}"
 	echo
 fi
