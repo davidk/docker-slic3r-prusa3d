@@ -35,7 +35,11 @@ checkGitHubRelease() {
 
 checkHubVersion() {
 	HUB_TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'${DOCKER_HUB_USER}'", "password": "'${DOCKER_HUB_PASS}'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
-	echo "Got Docker Hub Token: ${HUB_TOKEN}"
+	
+	if [[ -z "${HUB_TOKEN}" ]]; then
+		echo "Hub token empty? Response was: ${HUB_TOKEN}"
+	fi
+
 	HUB_VERSIONS=$(curl -s -H "Authorization: JWT ${HUB_TOKEN}" https://hub.docker.com/v2/repositories/${DOCKER_HUB_USER}/${DOCKER_HUB_REPO}/tags/?page_size=100 | jq -r '.results|.[]|.name')
 }
 
@@ -43,7 +47,7 @@ checkHubVersion() {
 # 1: tag name
 triggerDockerBuild() {
 	echo "Building ${1}"
- 	curl -H "Content-Type: application/json" --data "{\"source_type\": \"Tag\", \"source_name\": "${1}"}" -X POST "https://registry.hub.docker.com/u/${DOCKER_HUB_USER}/${DOCKER_HUB_REPO}/trigger/${DOCKER_HUB_REPO_TRIGGER_TOKEN}/"
+ 	curl -H "Content-Type: application/json" --data "{\"source_type\": \"Tag\", \"source_name\": \"${1}\"}" -X POST "https://registry.hub.docker.com/u/${DOCKER_HUB_USER}/${DOCKER_HUB_REPO}/trigger/${DOCKER_HUB_REPO_TRIGGER_TOKEN}/"
 }
 
 checkGitHubRelease
@@ -63,4 +67,5 @@ done
 if [[ "${BUILT}" == "yes" ]]; then
 	echo "${GH_VERSION} not found in the first 100 results. Triggering a build."
 	triggerDockerBuild "${GH_VERSION}-$(date '+%F')"
+	echo
 fi
