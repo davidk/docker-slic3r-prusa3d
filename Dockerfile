@@ -63,14 +63,9 @@ RUN apt-get update && apt-get install -y \
   && slic3rReleaseName=$(/Slic3r/getLatestSlic3rRelease.sh name) \
   && curl -sSL ${latestSlic3r} > ${slic3rReleaseName} \
   && rm -f /Slic3r/releaseInfo.json \
-  && curl -sSL https://github.com/prusa3d/Slic3r-settings/archive/master.zip > /Slic3r/slic3r-settings.zip \
   && mkdir -p /Slic3r/slic3r-dist \
   && tar -xjf ${slic3rReleaseName} -C /Slic3r/slic3r-dist --strip-components 1 \
-  && unzip -q slic3r-settings.zip \
-  && mkdir -p /home/slic3r/.Slic3r/ \
-  && cp -a /Slic3r/Slic3r-settings-master/Slic3r\ settings\ MK2S\ MK2MM\ and\ MK3/* /home/slic3r/.Slic3r/ \
   && rm -f /Slic3r/${slic3rReleaseName} \
-  && rm -f /Slic3r/slic3r-settings.zip \
   && rm -rf /var/lib/apt/lists/* \
   && apt-get purge -y --auto-remove jq curl ca-certificates unzip bzip2 \
   && apt-get autoclean \
