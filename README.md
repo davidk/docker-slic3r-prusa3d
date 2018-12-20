@@ -1,20 +1,24 @@
 # docker-slic3r-prusa3d
 
-Containerized Slic3r (Prusa3D version/fork) - Dockerfile and supporting script
+This repository tracks [Prusa3D's Slic3r fork](https://github.com/prusa3d/slic3r/) and triggers a Docker hub build when releases are tagged there. The files here contain the Dockerfile and supporting scripts.
 
-The header of the Dockerfile has more documentation, but to grab and run this (built on the Docker hub):
+To grab and run this (built on the Docker hub):
 
-`docker run -v /tmp/.X11-unix:/tmp/.X11-unix -v $PWD:/Slic3r/3d:z -v slic3rSettings:/home/slic3r -e DISPLAY=$DISPLAY --rm keyglitch/docker-slic3r-prusa3d`
+    docker run -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v $PWD:/Slic3r/3d:z \
+    -v slic3rSettings:/home/slic3r \
+    -e DISPLAY=$DISPLAY \
+    --rm keyglitch/docker-slic3r-prusa3d
 
 * Your current directory will be mounted into the container at /Slic3r/3d (change the :z option as appropriate to :rw/:ro).
 
 * Settings are persisted into the slic3rSettings volume.
 
-* SELinux might block access to X by slic3r inside the container. Look in /var/log/messages or /var/log/audit/audit.log to see if this is happening (and for the relevant commands to fix).
+* Fedora users: SELinux might block access to X by slic3r inside the container. Look in /var/log/messages or /var/log/audit/audit.log to see if this is happening (and for the relevant commands to fix).
 
-* Alternatively, there might be a plain permission error upon trying to access X. Try running `xhost local:root` to fix (this is a temporary fix and must be reapplied when restarting the host).
+* Alternatively, there might be a permission error upon trying to access X. Try running `xhost local:root` to fix (this is a temporary fix and must be reapplied when restarting the host).
 
-Sample error example (it\'s pretty cryptic, sigh):
+Sample error example:
 
     No protocol specified
     19:13:54: Error: Unable to initialize GTK+, is DISPLAY set properly?
@@ -38,11 +42,12 @@ Building:
 
 ### Convenience Script
 
-A [small script](https://raw.githubusercontent.com/davidk/docker-slic3r-prusa3d/master/slic3r.sh) is provided with the `docker run` command above for placing in a folder referenced by $PATH. It also contains a commented out snippet for entering the container and fixing the persisted volume when things go wrong (or just for poking around).
+A [small script](https://raw.githubusercontent.com/davidk/docker-slic3r-prusa3d/master/slic3r.sh) wraps the `docker run` command above. It also contains a commented out snippet for poking around the persistent volume.
 
 #### Example
 
     $ echo $PATH
     /usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/home/davidk/.local/bin:/home/davidk/bin
     $ cp slic3r.sh /home/davidk/.local/bin/slic3r
+    $ chmod +x /home/davidk/.local/bin/slic3r
     $ slic3r
