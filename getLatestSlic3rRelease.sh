@@ -34,18 +34,18 @@ fi
 
 if [[ "$1" == "url" ]]; then
 
-  echo "$(echo ${releaseInfo} | jq -r '.assets[] | .browser_download_url | select(test("Slic3rPE-.+(-\\w)?.linux64-full.+.tar.bz2"))')"
+  echo "${releaseInfo}" | jq -r '.assets[] | .browser_download_url | select(test("Slic3rPE-.+(-\\w)?.linux64-full.+.tar.bz2"))'
 
 elif [[ "$1" == "name" ]]; then
 
-  echo "$(echo ${releaseInfo} | jq -r '.assets[] | .name | select(test("Slic3rPE-.+(-\\w)?.linux64-full.+.tar.bz2"))')"
+  echo "${releaseInfo}" | jq -r '.assets[] | .name | select(test("Slic3rPE-.+(-\\w)?.linux64-full.+.tar.bz2"))'
 
 elif [[ "$1" == "url_ver" ]]; then
 
-  echo $(echo ${allReleases} | jq -r ".[] | .assets[] | .browser_download_url | select(test(\"Slic3rPE-$VER(-\\w)?.linux64-full.+.tar.bz2\"))")
+  echo "${allReleases}" | jq -r '.[] | .assets[] | .browser_download_url | select(test("Slic3rPE-$VER(-\\w)?.linux64-full.+.tar.bz2"))'
 
 elif [[ "$1" == "name_ver" ]]; then
 
-  echo $(echo ${allReleases} | jq -r ".[] | .assets[] | .name | select(test(\"Slic3rPE-$VER(-\\w)?.linux64-full.+.tar.bz2\"))")
+  echo "${allReleases}" | jq -r '.[] | .assets[] | .name | select(test("Slic3rPE-$VER(-\\w)?.linux64-full.+.tar.bz2"))'
 
 fi
