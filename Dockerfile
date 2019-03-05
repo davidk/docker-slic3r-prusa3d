@@ -67,7 +67,7 @@ RUN apt-get update && apt-get install -y \
   && tar -xjf ${slic3rReleaseName} -C /Slic3r/slic3r-dist --strip-components 1 \
   && rm -f /Slic3r/${slic3rReleaseName} \
   && rm -rf /var/lib/apt/lists/* \
-  && apt-get purge -y --auto-remove jq curl ca-certificates unzip bzip2 \
+  && apt-get purge -y --auto-remove jq curl unzip bzip2 \
   && apt-get autoclean \
   && chown -R slic3r:slic3r /Slic3r /home/slic3r
 
