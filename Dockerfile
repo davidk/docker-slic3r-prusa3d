@@ -57,6 +57,7 @@ RUN apt-get update && apt-get install -y \
   ca-certificates \
   unzip \
   bzip2 \
+  git \
   --no-install-recommends \
   && latestSlic3r=$(/Slic3r/getLatestSlic3rRelease.sh url) \
   && slic3rReleaseName=$(/Slic3r/getLatestSlic3rRelease.sh name) \
