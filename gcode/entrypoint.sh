@@ -1,8 +1,14 @@
 #!/bin/sh -l
-
+#
+# External environmental variables
+# GH_EMAIL
+# GH_USER
+#
+# External secrets
+# GH_TOKEN - https://github.com/settings/tokens
+# 
 set -eu
 
-#WORKDIR="/Slic3r/3d"
 WORKDIR="/github/workspace"
 SLICE_CFG=$1; shift
 
@@ -16,6 +22,7 @@ for stl in "$@"; do
 
 		git add . --force
 		git commit -m "slic3r: Generated gcode for ${stl} using ${SLICE_CFG}"
+		git remote set-url origin https://${GH_USER}:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}
 		git push --set-upstream origin master
 		
 	else
