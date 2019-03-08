@@ -37,7 +37,7 @@ for stl in "$@"; do
 		--output-filename-format '{input_filename_base}_{layer_height}mm_{filament_type[0]}_{printer_model}.gcode_updated' \
 		--output ${TMPDIR} ${WORKDIR}/${stl}"; then
 		exit_code=$?
-		echo ">>> Failure generating STL, exited with ${exit_code}"
+		echo "!!! Failure generating STL  - rc: ${exit_code} !!!"
 		exit $exit_code
 	fi
 
@@ -76,7 +76,7 @@ for stl in "$@"; do
 EOF
 		} | jq -r '.data | .repository | .object | .oid')"; then
 			exit_code=$?
-			echo "!!! Failed to get SHA from the GitHub GraphQL API !!!"
+			echo "!!! Failed to get SHA from the GitHub GraphQL API - rc: ${exit_code} !!!"
 			exit $exit_code
 		fi
 
@@ -105,7 +105,7 @@ EOF
 EOF
 		then
 			exit_code=$?
-			echo "!!! Couldn't update ${GCODE} with SHA ${SHA} using the GitHub API !!!"
+			echo "!!! Couldn't update ${GCODE} with SHA ${SHA} using the GitHub API - rc: ${exit_code} !!!"
 			exit $exit_code
 		fi
 	else
@@ -129,7 +129,7 @@ EOF
 EOF
 		then
 			exit_code=$?
-			echo "!!! Unable to upload ${GCODE} using the GitHub API !!!"
+			echo "!!! Unable to upload ${GCODE} using the GitHub API - rc: ${exit_code} !!!"
 			exit $exit_code
 		fi
 	fi
