@@ -16,28 +16,47 @@
 #
 # Optional environmental variables that can be provided:
 # (untested) BRANCH - the branch to operate on for queries to the API (default: master)
-#
+
+WORKDIR="/github/workspace"
+
+# Create a lock but wait if it is already held. 
+# This and the retry system help to work around inconsistent repository operations.
+# Derived from the flock(2) manual page.
+echo "Launched at: $(date +%H:%M:%S:%N)"
+(
+flock 9 
+echo "Unblocked and running at: $(date +%H:%M:%S:%N)"
 
 if [[ -z "${BRANCH}" ]]; then
 	BRANCH=master
 fi
 
-WORKDIR="/github/workspace"
+if [[ -z $UPDATE_RETRY ]]; then
+	UPDATE_RETRY=5
+fi
+
 SLICE_CFG=$1; shift
+
 # TODO: export this to a known directory and upload it immediately instead of scanning
 # for the file later..
 # probably want to use mktemp -d as well?
+
+echo -e "\n>>> Processing STLs $* with ${SLICE_CFG}\n"
+
 for stl in "$@"; do
+	mkdir -p "${WORKDIR}/${TMPDIR}"
 	TMPDIR="$(mktemp -d)"
 
-	echo ">>> Generating STL for $stl ..."
-	if ! sh -c "/Slic3r/slic3r-dist/slic3r \
+	echo -e "\n>>> Generating STL for $stl ...\n"
+	if /Slic3r/slic3r-dist/slic3r \
 		--no-gui \
-		--load ${WORKDIR}/${SLICE_CFG} \
+		--load "${WORKDIR}/${SLICE_CFG}" \
 		--output-filename-format '{input_filename_base}_{layer_height}mm_{filament_type[0]}_{printer_model}.gcode_updated' \
-		--output ${TMPDIR} ${WORKDIR}/${stl}"; then
+		--output "${TMPDIR}" "${WORKDIR}/${stl}"; then
+		echo -e "\n>>> Successfully generated gcode for STL\n"
+	else
 		exit_code=$?
-		echo "!!! Failure generating STL  - rc: ${exit_code} !!!"
+		echo -e "\n!!! Failure generating STL  - rc: ${exit_code} !!!\n"
 		exit $exit_code
 	fi
 
@@ -52,67 +71,97 @@ for stl in "$@"; do
 	GCODE="${GCODE_DIR}/${DEST_GCODE_FILE}"
 	GCODE="${GCODE#/}"
 
-	echo
-	echo ">>> Processing file as ${GCODE}"
+	echo -e "\n>>> Processing file as ${GCODE}\n"
 
 	if [[ -e "${WORKDIR}/${GCODE}" ]]; then
-		echo
-		echo ">>> Replacing file in ${GCODE}"
-		echo
+		echo -e "\n>>> Updating existing file in ${WORKDIR}/${GCODE}\n"
 		# This is a GraphQL call to avoid downloading the generated .gcode files (which may 403 when the file is too large)
 		# Syntax used below:
 		# ${GITHUB_REPOSITORY%/*} -- capture the username before the '/'
 		# ${GITHUB_REPOSITORY#*/} -- capture the repository name after the '/'
 		# ${GCODE#./}			  -- remove the './' prefix in front of paths if it exists
-	if ! SHA="$({
-	curl -f -sSL \
-		-H "Authorization: bearer ${GITHUB_TOKEN}" \
-		-H "User-Agent: github.com/davidk/docker-slic3r-prusa3d" \
-		"https://api.github.com/graphql" \
-		-d @- <<-EOF
-		{
-		"query": "query {repository(owner: \"${GITHUB_REPOSITORY%/*}\", name: \"${GITHUB_REPOSITORY#*/}\") {object(expression: \"${BRANCH}:${GCODE#./}\"){ ... on Blob { oid } }}}"
-		}
-EOF
-		} | jq -r '.data | .repository | .object | .oid')"; then
-			exit_code=$?
-			echo "!!! Failed to get SHA from the GitHub GraphQL API - rc: ${exit_code} !!!"
-			exit $exit_code
-		fi
 
-		echo ">>> SHA of previous file: ${SHA}, rc: $?"
-		echo
-	else
-		SHA=""
-	fi
+		while true; do
 
-	if [[ "${SHA}" != "null" ]]; then
-		if ! curl -f -sSL \
-		-X PUT "https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/${GCODE}?ref=${BRANCH}" \
-		-H "Accept: application/vnd.github.v3+json" \
-		-H "Authorization: token ${GITHUB_TOKEN}" \
-		-H "User-Agent: github.com/davidk/docker-slic3r-prusa3d" \
-		-d @- <<-EOF
-		{
-		  "message": "Slic3r: updating ${GCODE}",
-		  "committer": {
-		    "name": "${GITHUB_ACTOR}",
-		    "email": "${GITHUB_ACTOR}@example.com"
-		  },
-		  "content": "$(base64 < "${TMPDIR}/${GENERATED_GCODE}")",
-		  "sha": "${SHA}"
-		}
+			if SHA="$({
+				curl -f -sSL \
+				-H "Authorization: bearer ${GITHUB_TOKEN}" \
+				-H "User-Agent: github.com/davidk/docker-slic3r-prusa3d" \
+				"https://api.github.com/graphql" \
+				-d @- <<-EOF
+				{
+				"query": "query {repository(owner: \"${GITHUB_REPOSITORY%/*}\", name: \"${GITHUB_REPOSITORY#*/}\") {object(expression: \"${BRANCH}:${GCODE#./}\"){ ... on Blob { oid } }}}"
+				}
 EOF
-		then
-			exit_code=$?
-			echo "!!! Couldn't update ${GCODE} with SHA ${SHA} using the GitHub API - rc: ${exit_code} !!!"
-			exit $exit_code
-		fi
+				} | jq -r '.data | .repository | .object | .oid')"; then
+					echo -e "\n>>> Successfully retrieved sha:${SHA} from GitHub GraphQL API\n"
+			else
+				exit_code=$?
+
+				echo -e "\n!!! Failed to get SHA from the GitHub GraphQL API - rc: ${exit_code} !!!\n"
+
+				SHA=""
+
+				echo -e "\n!!! Retry attempts: ${UPDATE_RETRY} !!!\n"
+
+				if [[ ${UPDATE_RETRY} -le 0 ]]; then
+					echo -e "!!! Ran out of retry attempts."
+					exit $exit_code
+				fi
+
+			fi
+
+			if [[ "${SHA}" == "null" ]]; then
+				echo -e "\n>>> New file\n"
+				break
+			fi
+
+			if curl -f -sSL \
+				-X PUT "https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/${GCODE}?ref=${BRANCH}" \
+				-H "Accept: application/vnd.github.v3+json" \
+				-H "Authorization: token ${GITHUB_TOKEN}" \
+				-H "User-Agent: github.com/davidk/docker-slic3r-prusa3d" \
+				-d @- <<-EOF
+				{
+				  "message": "Slic3r: updating ${GCODE}",
+				  "committer": {
+				    "name": "${GITHUB_ACTOR}",
+				    "email": "${GITHUB_ACTOR}@example.com"
+				  },
+				  "content": "$(base64 < "${TMPDIR}/${GENERATED_GCODE}")",
+				  "sha": "${SHA}"
+				}
+EOF
+			then
+				echo -e "\n>>> Successfully updated ${GCODE} using the GitHub API\n"
+				break
+			else
+				exit_code=$?
+				echo "!!! Couldn't update ${GCODE} with SHA ${SHA} using the GitHub API - rc: ${exit_code} !!!"
+				echo "!!! Possible reasons for this error !!!"
+				echo "!!! * GitHub API is down (see the return code) !!!"
+				echo "!!! * Two actions are trying to update the repository at the same time (409 conflict) !!!"
+				echo "!!! Workaround: Make actions depend on each other with the 'needs' keyword            !!!"
+				echo "!!! Retry attempts: ${UPDATE_RETRY} !!!"
+
+				if [[ ${UPDATE_RETRY} -le 0 ]]; then
+					echo -e "!!! Ran out of retry attempts."
+					exit $exit_code
+				fi
+			fi
+
+			if [[ ${UPDATE_RETRY} -gt 0 ]]; then
+				sleep ${UPDATE_RETRY}
+				echo -e "!!! Retrying due to errors. !!!"
+			fi
+
+			((UPDATE_RETRY--))
+		done
 	else
-		echo
-		echo ">>> Committing new file ${GCODE}"
-		echo
-		if ! curl -f -sSL \
+
+		echo -e "\n>>> Committing new file ${GCODE}\n"
+
+		if curl -f -sSL \
 		-X PUT "https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/${GCODE}?ref=${BRANCH}" \
 		-H "Accept: application/vnd.github.v3+json" \
 		-H "Authorization: token ${GITHUB_TOKEN}" \
@@ -128,19 +177,18 @@ EOF
 		}
 EOF
 		then
+			echo -e "\n>>> Successfully added a new file (${GCODE}) using the GitHub API\n"
+		else
 			exit_code=$?
-			echo "!!! Unable to upload ${GCODE} using the GitHub API - rc: ${exit_code} !!!"
+			echo -e "!!! Unable to upload ${GCODE} using the GitHub API - rc: ${exit_code} !!!"
 			exit $exit_code
 		fi
 	fi
 
-	echo
-	echo ">>> Finished processing file"
-	echo
+	echo -e "\n>>> Finished processing file\n"
 
-	echo ">>> Successfully generated STL for ${stl} ..."
 	rm -rf "${TMPDIR}"
 done
+) 9>"$WORKDIR/slice.lock"
 
-# Upload generated gcode files using secret ${GITHUB_TOKEN}, if "sha" is defined, this updates the 
-# file instead. This should only affect .gcode_updated files created by the previous slicer pass.
+echo "Completed at: $(date +%H:%M:%S:%N)"
