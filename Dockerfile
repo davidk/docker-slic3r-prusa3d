@@ -71,6 +71,8 @@ RUN apt-get update && apt-get install -y \
   && apt-get autoclean \
   && chown -R slic3r:slic3r /Slic3r /home/slic3r
 
+COPY LICENSE-slic3r /
+
 USER slic3r
 
 # Settings storage
