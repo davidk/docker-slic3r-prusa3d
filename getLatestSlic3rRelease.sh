@@ -1,5 +1,5 @@
 #!/bin/bash
-# Get the latest release of Prusa3D's slic3r for Linux (non-AppImage) via the GitHub API
+# Get the latest release of PrusaSlicer for Linux (non-AppImage) via the GitHub API
 
 set -eu
 
@@ -14,7 +14,7 @@ mkdir -p $baseDir
 
 if [[ ! -e "$baseDir/latestReleaseInfo.json" ]]; then
 
-  curl -SsL https://api.github.com/repos/prusa3d/slic3r/releases/latest > $baseDir/latestReleaseInfo.json
+  curl -SsL https://api.github.com/repos/prusa3d/PrusaSlicer/releases/latest > $baseDir/latestReleaseInfo.json
 
 fi
 
@@ -25,7 +25,7 @@ if [[ $# -gt 1 ]]; then
   VER=$2
 
   if [[ ! -e "$baseDir/releases.json" ]]; then
-    curl -SsL https://api.github.com/repos/prusa3d/slic3r/releases > $baseDir/releases.json
+    curl -SsL https://api.github.com/repos/prusa3d/PrusaSlicer/releases > $baseDir/releases.json
   fi
 
   allReleases=$(cat $baseDir/releases.json)
@@ -33,19 +33,19 @@ if [[ $# -gt 1 ]]; then
 fi
 
 if [[ "$1" == "url" ]]; then
-
-  echo "${releaseInfo}" | jq -r '.assets[] | .browser_download_url | select(test("Slic3rPE-.+(-\\w)?.linux64-full.+.tar.bz2"))'
+  
+  echo "${releaseInfo}" | jq -r '.assets[] | .browser_download_url | select(test("PrusaSlicer-.+(-\\w)?.linux64-.+.tar.bz2"))'
 
 elif [[ "$1" == "name" ]]; then
 
-  echo "${releaseInfo}" | jq -r '.assets[] | .name | select(test("Slic3rPE-.+(-\\w)?.linux64-full.+.tar.bz2"))'
+  echo "${releaseInfo}" | jq -r '.assets[] | .name | select(test("PrusaSlicer-.+(-\\w)?.linux64-.+.tar.bz2"))'
 
 elif [[ "$1" == "url_ver" ]]; then
 
-  echo "${allReleases}" | jq -r '.[] | .assets[] | .browser_download_url | select(test("Slic3rPE-$VER(-\\w)?.linux64-full.+.tar.bz2"))'
+  echo "${allReleases}" | jq -r '.[] | .assets[] | .browser_download_url | select(test("PrusaSlicer-$VER(-\\w)?.linux64-.+.tar.bz2"))'
 
 elif [[ "$1" == "name_ver" ]]; then
 
-  echo "${allReleases}" | jq -r '.[] | .assets[] | .name | select(test("Slic3rPE-$VER(-\\w)?.linux64-full.+.tar.bz2"))'
+  echo "${allReleases}" | jq -r '.[] | .assets[] | .name | select(test("PrusaSlicer-$VER(-\\w)?.linux64-.+.tar.bz2"))'
 
 fi
