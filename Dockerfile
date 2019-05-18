@@ -80,4 +80,4 @@ RUN mkdir -p /home/slic3r/.local/share/
 
 VOLUME /home/slic3r/
 
-ENTRYPOINT [ "/Slic3r/slic3r-dist/slic3r" ]
+ENTRYPOINT [ "/Slic3r/slic3r-dist/prusa-slicer" ]
