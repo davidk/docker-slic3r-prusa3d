@@ -4,8 +4,7 @@
 
 set -eu
 
-LATEST_RELEASE="https://api.github.com/repos/prusa3d/slic3r/releases/latest"
-
+LATEST_RELEASE="https://api.github.com/repos/prusa3d/PrusaSlicer/releases/latest"
 # Get the latest tagged version
 LATEST_VERSION="$(curl -SsL ${LATEST_RELEASE} | jq -r '.tag_name | select(test("^version_[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}\\-{0,1}(\\w+){0,1}$"))' | cut -d_ -f2)"
 
