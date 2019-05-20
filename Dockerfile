@@ -1,7 +1,7 @@
-# DESCRIPTION:    Slic3r Prusa3D edition in a Docker container
+# DESCRIPTION:    PrusaSlicer in a Docker container
 # AUTHOR:         davidk
-# COMMENTS:       This Dockerfile wraps Prusa3D's fork of Slic3r into a Docker
-#                 container with settings for the Prusa i3 MK2.
+# COMMENTS:       This Dockerfile wraps Prusa3D's fork of Slic3r (PrusaSlicer) into a Docker
+#                 container
 #
 #                 Derived from Jess Frazelle's Atom Dockerfile
 #                 https://raw.githubusercontent.com/jessfraz/dockerfiles/master/atom/Dockerfile
@@ -9,7 +9,7 @@
 # USAGE:
 #
 #         # Build image
-#         docker build -t slic3r .
+#         docker build -t keyglitch/docker-slic3r-prusa3d .
 #
 #         # Run it!
 #         docker run -v /tmp/.X11-unix:/tmp/.X11-unix -v $PWD:/Slic3r/3d:z -v slic3rSettings:/home/slic3r -e DISPLAY=$DISPLAY --rm keyglitch/docker-slic3r-prusa3d
