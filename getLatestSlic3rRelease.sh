@@ -42,10 +42,10 @@ elif [[ "$1" == "name" ]]; then
 
 elif [[ "$1" == "url_ver" ]]; then
 
-  echo "${allReleases}" | jq -r '.[] | .assets[] | .browser_download_url | select(test("PrusaSlicer-$VER(-\\w)?.linux64-.+.tar.bz2"))'
+  echo "${allReleases}" | jq -r ".[] | .assets[] | .browser_download_url | select(test(\"PrusaSlicer-$VER(-\\w)?.linux64-.+.tar.bz2\"))"
 
 elif [[ "$1" == "name_ver" ]]; then
 
-  echo "${allReleases}" | jq -r '.[] | .assets[] | .name | select(test("PrusaSlicer-$VER(-\\w)?.linux64-.+.tar.bz2"))'
+  echo "${allReleases}" | jq -r ".[] | .assets[] | .name | select(test(\"PrusaSlicer-$VER(-\\w)?.linux64-.+.tar.bz2\"))"
 
 fi
