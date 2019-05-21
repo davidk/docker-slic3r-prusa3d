@@ -1,7 +1,6 @@
 workflow "Update and build PrusaSlicer" {
   resolves = ["buildpush prusaslicer"]
-  on = "push"
-  # on = "schedule(0 8 * * *)"
+  on = "schedule(0 2 * * *)"
 }
 
 action "login" {
