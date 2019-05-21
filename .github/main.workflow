@@ -21,7 +21,7 @@ action "check latest prusaslicer release" {
   secrets = [
     "GITHUB_TOKEN",
   ]
-  args = ["apt-get update", "apt-get -y install curl jq", "./checkForLatestSlic3r.sh"]
+  args = ["apt-get update", "apt-get -y install curl jq git", "./checkForLatestSlic3r.sh"]
 }
 
 action "buildpush prusaslicer" {
