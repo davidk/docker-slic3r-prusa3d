@@ -1,7 +1,7 @@
 # DESCRIPTION:    PrusaSlicer in a Docker container
 # AUTHOR:         davidk
 # COMMENTS:       This Dockerfile wraps Prusa3D's fork of Slic3r (PrusaSlicer) into a Docker
-#                 container
+#                 container for use.
 #
 #                 Derived from Jess Frazelle's Atom Dockerfile
 #                 https://raw.githubusercontent.com/jessfraz/dockerfiles/master/atom/Dockerfile

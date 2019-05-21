@@ -37,7 +37,6 @@ Building:
 
     $ docker build -t docker-slic3r-prusa3d .
     Sending build context to Docker daemon 73.73 kB
-    Step 1 : FROM debian:stretch
     [ .. truncated ..]
 
 ### Convenience Script
