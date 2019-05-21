@@ -18,7 +18,7 @@ action "login" {
 action "check latest prusaslicer release" {
   uses = "actions/bin/sh@master"
   needs = ["login"]
-  secret = [
+  secrets = [
     "GITHUB_TOKEN",
   ]
   args = ["apt-get update", "apt-get -y install curl jq", "./checkForLatestSlic3r.sh"]
