@@ -1,7 +1,8 @@
 workflow "Update and build PrusaSlicer" {
   resolves = ["buildpush prusaslicer"]
   on = "push"
- # on = "schedule(0 8 * * *)"
+
+  # on = "schedule(0 8 * * *)"
 }
 
 action "login" {
@@ -18,7 +19,7 @@ action "check latest prusaslicer release" {
   uses = "actions/bin/sh@master"
   needs = ["login"]
   secret = [
-    "GITHUB_TOKEN"
+    "GITHUB_TOKEN",
   ]
   args = ["apt-get update", "apt-get -y install curl jq", "./checkForLatestSlic3r.sh"]
 }
@@ -27,9 +28,10 @@ action "buildpush prusaslicer" {
   uses = "davidk/docker/cli-multi@cli-loop"
   needs = ["check latest prusaslicer release"]
   args = [
-    "build -t keyglitch/docker-slic3r-prusa3d:latest -f /github/workspace/Dockerfile .", 
-    "tag keyglitch/docker-slic3r-prusa3d:latest keyglitch/docker-slic3r-prusa3d:$(cat /github/workspace/VERSION)", 
+    "build -t keyglitch/docker-slic3r-prusa3d:latest -f /github/workspace/Dockerfile .",
+    "tag keyglitch/docker-slic3r-prusa3d:latest keyglitch/docker-slic3r-prusa3d:$(cat /github/workspace/VERSION)",
     "tag keyglitch/docker-slic3r-prusa3d:latest keyglitch/prusaslicer:latest",
     "tag keyglitch/prusaslicer:latest keyglitch/prusaslicer:$(cat /github/workspace/VERSION)",
-    "push keyglitch/docker-slic3r-prusa3d"]
+    "push keyglitch/docker-slic3r-prusa3d",
+  ]
 }
