@@ -37,10 +37,13 @@ if [[ "${LATEST_GIT_TAG}" != "${LATEST_VERSION}" ]]; then
 
   echo "Update needed. Latest tag ver: ${LATEST_GIT_TAG} != upstream ver: ${LATEST_VERSION} .."
   git tag "${LATEST_VERSION}"
-  git push --tags
 
   if [[ "$GH_ACTION" != "" ]]; then
+    echo "${LATEST_VERSION}" > /github/workspace/VERSION
+    git push https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY --tags
     exit 0
+  else
+    git push --tags
   fi    
 
 else
