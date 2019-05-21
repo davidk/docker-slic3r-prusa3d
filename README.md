@@ -2,7 +2,7 @@
 
 This repository tracks [Prusa3D's PrusaSlicer](https://github.com/prusa3d/PrusaSlicer). The files here contain the Dockerfile, supporting scripts and instructions for usage.
 
-If you're looking for a build of Prusa3D's PrusaSlicer, the latest builds are available on PrusaSlicer's [releases page](https://github.com/prusa3d/PrusaSlicer/releases).
+If you're looking for a build of PrusaSlicer, the latest builds are available on PrusaSlicer's [releases page](https://github.com/prusa3d/PrusaSlicer/releases).
 
 To grab and run this (built on the Docker hub):
 
