@@ -31,6 +31,7 @@ action "buildpush prusaslicer" {
     "tag keyglitch/docker-slic3r-prusa3d:latest keyglitch/docker-slic3r-prusa3d:$(cat /github/workspace/VERSION)",
     "tag keyglitch/docker-slic3r-prusa3d:latest keyglitch/prusaslicer:latest",
     "tag keyglitch/prusaslicer:latest keyglitch/prusaslicer:$(cat /github/workspace/VERSION)",
-    "push keyglitch/docker-slic3r-prusa3d",
+    "push keyglitch/docker-slic3r-prusa3d", 
+    "push keyglitch/prusaslicer"
   ]
 }
