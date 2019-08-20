@@ -1,10 +1,10 @@
 # docker-prusaslicer
 
-This repository tracks [Prusa3D's PrusaSlicer](https://github.com/prusa3d/PrusaSlicer). The files here contain the Dockerfile, supporting scripts and instructions for usage.
+This repository tracks and containerizes [Prusa3D's PrusaSlicer](https://github.com/prusa3d/PrusaSlicer). The files here contain the Dockerfile, supporting scripts and instructions for usage.
 
-If you're looking for a build of PrusaSlicer, the latest builds are available on PrusaSlicer's [releases page](https://github.com/prusa3d/PrusaSlicer/releases).
+If you're looking for a regular build of PrusaSlicer, the latest builds are available on PrusaSlicer's [releases page](https://github.com/prusa3d/PrusaSlicer/releases).
 
-To grab and run this (built on the Docker hub):
+To grab and run PrusaSlicer as a container:
 
     docker run -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v $PWD:/Slic3r/3d:z \
