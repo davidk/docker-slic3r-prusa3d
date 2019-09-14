@@ -17,7 +17,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        args: '"apt-get update" "apt-get -y install curl jq git" ./checkForLatestSlic3r.sh'
+        args: '"apt-get update" "apt-get -y install curl jq git" ./tagLatestPrusaSlicer.sh'
     - name: buildpush prusaslicer
       uses: davidk/docker/cli-multi@cli-loop
       with:

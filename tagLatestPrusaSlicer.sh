@@ -1,6 +1,6 @@
 #!/bin/bash
-# getReleaseTags.sh
-# Push a tag for our repository if an upstream repository generates a new release
+# tagLatestPrusaSlicer.sh
+# Push a tag for our repository if upstream PrusaSlicer generates a new release
 
 set -eu
 
@@ -20,8 +20,9 @@ LATEST_VERSION="$(curl -SsL ${LATEST_RELEASE} | jq -r '.tag_name | select(test("
 
 if [[ -z "${LATEST_VERSION}" ]]; then
 
-  echo "Data garbled?"
-  echo "Resulting output: ${LATEST_VERSION}"
+  echo "Could not determine the latest version."
+  echo "Has release naming changed from previous conventions?"
+  echo "${LATEST_VERSION}"
   exit 1
 
 fi
