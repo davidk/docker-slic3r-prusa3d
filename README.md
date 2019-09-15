@@ -33,7 +33,7 @@ Sample error example:
 
 ### Building the latest release locally
 
-If the hub version is ever out of date (or for any other reason), it is possible to build an image locally. `getLatestSlic3rRelease.sh` will automatically try to get the latest non-AppImage version through the GitHub API during the build process.
+If the hub version is ever out of date (or for any other reason), it is possible to build an image locally. `getLatestPrusaSlicerRelease.sh` will automatically try to get the latest non-AppImage version through the GitHub API during the build process.
 
 Building:
 

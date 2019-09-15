@@ -63,8 +63,8 @@ RUN groupadd slic3r \
   && chown slic3r:slic3r /Slic3r
 
 WORKDIR /Slic3r
-ADD getLatestSlic3rRelease.sh /Slic3r
-RUN chmod +x /Slic3r/getLatestSlic3rRelease.sh
+ADD getLatestPrusaSlicerRelease.sh /Slic3r
+RUN chmod +x /Slic3r/getLatestPrusaSlicerRelease.sh
 
 RUN apt-get update && apt-get install -y \
   jq \
@@ -74,8 +74,8 @@ RUN apt-get update && apt-get install -y \
   bzip2 \
   git \
   --no-install-recommends \
-  && latestSlic3r=$(/Slic3r/getLatestSlic3rRelease.sh url) \
-  && slic3rReleaseName=$(/Slic3r/getLatestSlic3rRelease.sh name) \
+  && latestSlic3r=$(/Slic3r/getLatestPrusaSlicerRelease.sh url) \
+  && slic3rReleaseName=$(/Slic3r/getLatestPrusaSlicerRelease.sh name) \
   && curl -sSL ${latestSlic3r} > ${slic3rReleaseName} \
   && rm -f /Slic3r/releaseInfo.json \
   && mkdir -p /Slic3r/slic3r-dist \
