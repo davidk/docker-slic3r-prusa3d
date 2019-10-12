@@ -1,0 +1,35 @@
+name: Update and build PrusaSlicer
+
+on:
+  push:
+  schedule:
+  - cron:  0 2 * * *
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+
+    - name: login
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY_URL
+
+    - name: check latest prusaslicer release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        apt-get update && \ 
+        apt-get -y install curl jq git && \
+        ./tagLatestPrusaSlicer.sh
+
+    - name: buildpush prusaslicer
+      run: |
+        docker build -t keyglitch/docker-slic3r-prusa3d:latest -f /github/workspace/Dockerfile . && \
+        docker tag keyglitch/docker-slic3r-prusa3d:latest keyglitch/docker-slic3r-prusa3d:$(cat /github/workspace/VERSION) && \
+        docker tag keyglitch/docker-slic3r-prusa3d:latest keyglitch/prusaslicer:latest && \ 
+        docker tag keyglitch/prusaslicer:latest keyglitch/prusaslicer:$(cat /github/workspace/VERSION) && \
+        docker push keyglitch/docker-slic3r-prusa3d && \
+        docker push keyglitch/prusaslicer
