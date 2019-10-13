@@ -15,21 +15,24 @@ jobs:
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      run: echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
+      run: echo "${DOCKER_PASSWORD}" | docker login -u $DOCKER_USERNAME --password-stdin
 
     - name: check latest prusaslicer release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: true
       run: |
-        apt-get update && \ 
-        apt-get -y install curl jq git && \
-        ./tagLatestPrusaSlicer.sh
+        ${GITHUB_WORKSPACE}/tagLatestPrusaSlicer.sh
 
-    - name: buildpush prusaslicer
+    - name: build PrusaSlicer image and push
       run: |
-        docker build -t keyglitch/docker-slic3r-prusa3d:latest -f /github/workspace/Dockerfile . && \
-        docker tag keyglitch/docker-slic3r-prusa3d:latest keyglitch/docker-slic3r-prusa3d:$(cat /github/workspace/VERSION) && \
+        if [[ -e "${GITHUB_WORKSPACE}/VERSION" ]]; then
+        docker build -t keyglitch/docker-slic3r-prusa3d:latest -f ${GITHUB_WORKSPACE}/Dockerfile . && \
+        docker tag keyglitch/docker-slic3r-prusa3d:latest keyglitch/docker-slic3r-prusa3d:$(cat ${GITHUB_WORKSPACE}/VERSION) && \
         docker tag keyglitch/docker-slic3r-prusa3d:latest keyglitch/prusaslicer:latest && \ 
-        docker tag keyglitch/prusaslicer:latest keyglitch/prusaslicer:$(cat /github/workspace/VERSION) && \
+        docker tag keyglitch/prusaslicer:latest keyglitch/prusaslicer:$(cat ${GITHUB_WORKSPACE}/VERSION) && \
         docker push keyglitch/docker-slic3r-prusa3d && \
         docker push keyglitch/prusaslicer
+        else
+        echo "Update was not needed, version file was not written."
+        fi

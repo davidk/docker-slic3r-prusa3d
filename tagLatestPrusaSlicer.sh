@@ -40,7 +40,7 @@ if [[ "${LATEST_GIT_TAG}" != "${LATEST_VERSION}" ]]; then
   git tag "${LATEST_VERSION}"
 
   if [[ "$GH_ACTION" != "" ]]; then
-    echo "${LATEST_VERSION}" > /github/workspace/VERSION
+    echo "${LATEST_VERSION}" > ${GITHUB_WORKSPACE}/VERSION
     git push https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY --tags
     exit 0
   else
@@ -50,13 +50,6 @@ if [[ "${LATEST_GIT_TAG}" != "${LATEST_VERSION}" ]]; then
 else
 
   echo "Latest tag ver: ${LATEST_GIT_TAG} == upstream ver: ${LATEST_VERSION} -- no update"
-  # only use this exit code if we're running within github actions, since its specific to actions
-  # see: https://developer.github.com/actions/creating-github-actions/accessing-the-runtime-environment/#exit-codes-and-statuses
-
-  if [[ "$GH_ACTION" != "" ]]; then
-    exit 78
-  else
-    exit 0
-  fi
+  exit 0
 
 fi
