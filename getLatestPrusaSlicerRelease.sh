@@ -46,11 +46,11 @@ fi
 
 if [[ "$1" == "url" ]]; then
   
-  echo "${releaseInfo}" | jq -r '.assets[] | .browser_download_url | select(test("PrusaSlicer-.+(-\\w)?.linux64-.+.tar.bz2"))'
+  echo "${releaseInfo}" | jq -r '.assets[] | .browser_download_url | select(test("PrusaSlicer-.+(-\\w)?.linux-x64-.+.tar.bz2"))'
 
 elif [[ "$1" == "name" ]]; then
 
-  echo "${releaseInfo}" | jq -r '.assets[] | .name | select(test("PrusaSlicer-.+(-\\w)?.linux64-.+.tar.bz2"))'
+  echo "${releaseInfo}" | jq -r '.assets[] | .name | select(test("PrusaSlicer-.+(-\\w)?.linux-x64-.+.tar.bz2"))'
 
 elif [[ "$1" == "url_ver" ]]; then
 
