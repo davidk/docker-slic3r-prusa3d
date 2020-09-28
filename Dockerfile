@@ -89,6 +89,7 @@ RUN apt-get update && apt-get install -y \
 COPY LICENSE-slic3r /
 
 USER slic3r
+ENV USER slic3r
 
 # Settings storage
 RUN mkdir -p /home/slic3r/.local/share/
