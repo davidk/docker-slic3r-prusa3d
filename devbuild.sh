@@ -8,6 +8,14 @@ PS_GIT_REPO="https://github.com/prusa3d/PrusaSlicer"
 # utility will clone a copy using Git and build it.
 BUILD_PS_IN=""
 
+# Change the kind of Dockerfile to build against depending on how the resulting build is run
+DF_BUILD_TYPE="Dockerfile.development"
+
+if [[ "$1" == "run" || "$2" == "run" ]]; then
+	DF_BUILD_TYPE="Dockerfile.development.gui"
+	echo "Building for GUI launch.. with ${DF_BUILD_TYPE}"
+fi
+
 if [[ -d "$1" ]]; then
 	echo "Using $1 to build PrusaSlicer"
 	BUILD_PS_IN=$1
@@ -41,7 +49,7 @@ if hash podman 2>/dev/null; then
 fi
 
 
-if ! ${CONTAINER_BIN} build -t keyglitch/prusaslicer-compiler -f Dockerfile.development .; then
+if ! ${CONTAINER_BIN} build -t keyglitch/prusaslicer-compiler -f "${DF_BUILD_TYPE}" .; then
 	echo "Failed to build container; $?"
 	exit;
 fi
@@ -61,3 +69,16 @@ ${CONTAINER_BIN} run -v "${BUILD_PS_IN}":/home/slic3r/PrusaSlicer:Z -i --rm keyg
     && readlink -f ./src/prusa-slicer \
     && exit 0
 EOF
+
+if [[ "${DF_BUILD_TYPE}" == "Dockerfile.development.gui" ]]; then
+    echo "Running GUI since the GUI build was requested"
+
+    ${CONTAINER_BIN} run -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v slic3rSettings:/home/slic3r \
+    -v ${PWD}/PrusaSlicer:/home/slic3r/PrusaSlicer:Z \
+    -v ${PWD}:/home/slic3r/3d:rw \
+    -e DISPLAY=$DISPLAY \
+    --rm keyglitch/prusaslicer-compiler \
+    /home/slic3r/PrusaSlicer/build/src/prusa-slicer
+
+fi
