@@ -14,7 +14,7 @@
 # USAGE(docker):
 #
 #       # Build image
-#       docker build -t keyglitch/prusaslicer-dev -f Dockerfile.development.full-dependencies .
+#       docker build -t keyglitch/prusaslicer-dev -f Dockerfile.development.gui .
 #
 #       # Run it!
 #       docker run -v $PWD/PrusaSlicer:/home/slic3r/PrusaSlicer:Z --rm keyglitch/prusaslicer-dev
@@ -25,19 +25,19 @@
 #	podman unshare chown 1000:1000 -R ./PrusaSlicer
 #
 #	# Build image
-#	podman build -t keyglitch/prusaslicer-dev -f Dockerfile.development.full-dependencies .
+#	podman build -t keyglitch/prusaslicer-dev -f Dockerfile.development.gui .
 #
 #	# Run it!
 #	podman run -v $PWD/PrusaSlicer:/home/slic3r/PrusaSlicer:Z --rm keyglitch/prusaslicer-dev 
 #
 
-# focal=20.04
-FROM ubuntu:focal 
+FROM debian:buster
 
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && apt-get install -y \
+	apt-transport-https \
 	build-essential \
 	bzip2 \
 	ca-certificates \
@@ -103,8 +103,3 @@ ENV USER slic3r
 WORKDIR /home/slic3r/
 
 VOLUME /home/slic3r/.local/share
-
-COPY --chown=slic3r:slic3r ./devBuilder.sh /home/slic3r
-RUN chmod +x /home/slic3r/devBuilder.sh
-
-CMD /home/slic3r/devBuilder.sh
