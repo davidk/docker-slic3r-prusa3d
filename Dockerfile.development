@@ -31,8 +31,6 @@
 #	podman run -v $PWD/PrusaSlicer:/home/slic3r/PrusaSlicer:Z --rm keyglitch/prusaslicer-dev 
 #
 
-# focal=20.04
-# bionic=18.04
 FROM debian:buster
 
 ENV TZ=UTC
