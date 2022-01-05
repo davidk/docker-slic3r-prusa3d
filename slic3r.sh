@@ -2,7 +2,8 @@
 # Place this in your $PATH and chmod +x so you can run it like a regular program
 # Change paths, etc as appropriate
 
-docker run -v /tmp/.X11-unix:/tmp/.X11-unix \
+docker run --net=host \
+-v /tmp/.X11-unix:/tmp/.X11-unix \
 -v "$PWD":/Slic3r/3d \
 -v slic3rSettings:/home/slic3r \
 -e DISPLAY="$DISPLAY" \
