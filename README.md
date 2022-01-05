@@ -8,7 +8,8 @@ If you're looking for a regular build of PrusaSlicer, the latest builds are avai
 
 To grab and run PrusaSlicer as a container (in GUI mode)
 
-    docker run -v /tmp/.X11-unix:/tmp/.X11-unix \
+    docker run --net=host \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v $PWD:/Slic3r/3d:z \
     -v slic3rSettings:/home/slic3r \
     -e DISPLAY=$DISPLAY \
