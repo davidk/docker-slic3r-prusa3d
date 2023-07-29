@@ -26,16 +26,16 @@
 #         # Information about where stuff is
 #         docker volume inspect slic3rSettings
 
-FROM debian:bullseye
+FROM debian:stable
 
 RUN apt-get update && apt-get install -y \
   dbus-x11 \
-  freeglut3 \
   libgtk2.0-dev \
   libwx-perl \
   libxmu-dev \
   libgl1-mesa-glx \
   libgl1-mesa-dri \
+  mesa-utils \
   xdg-utils \
   locales \
   --no-install-recommends \
