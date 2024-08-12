@@ -46,17 +46,17 @@ fi
 
 if [[ "$1" == "url" ]]; then
 
-  echo "${releaseInfo}" | jq -r '.assets[] | .browser_download_url | select(test("PrusaSlicer-.+(-\\w)?.linux-x64-(?!GTK3).+.tar.bz2"))'
+  echo "${releaseInfo}" | jq -r '.assets[] | .browser_download_url | select(test("PrusaSlicer-.+(-\\w)?.(linux64|linux-x64-GTK3)-([^-]+)(.tar.bz2|.AppImage)"))'
 
 elif [[ "$1" == "name" ]]; then
 
-  echo "${releaseInfo}" | jq -r '.assets[] | .name | select(test("PrusaSlicer-.+(-\\w)?.linux-x64-(?!GTK3).+.tar.bz2"))'
+  echo "${releaseInfo}" | jq -r '.assets[] | .name | select(test("PrusaSlicer-.+(-\\w)?.(linux64|linux-x64-GTK3)-([^-]+)(.tar.bz2|.AppImage)"))'
 
 elif [[ "$1" == "url_ver" ]]; then
 
   # Note: Releases sometimes have hex-encoded ascii characters tacked on
   # So version '2.0.0+' might need to be requested as '2.0.0%2B' since GitHub returns that as the download URL
-  echo "${allReleases}" | jq --arg VERSION "$VER" -r '.[] | .assets[] | .browser_download_url | select(test("PrusaSlicer-" + $VERSION + "linux64-.+.tar.bz2"))'
+  echo "${allReleases}" | jq --arg VERSION "$VER" -r '.[] | .assets[] | .browser_download_url | select(test("PrusaSlicer-" + $VERSION + "(\\+|\\%2B)(linux64-.+|linux-x64-GTK3-.+)(.tar.bz2|.AppImage)"))'
 
 elif [[ "$1" == "name_ver" ]]; then
    
