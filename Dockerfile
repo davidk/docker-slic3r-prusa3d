@@ -82,7 +82,7 @@ RUN apt-get update && apt-get install -y \
   && curl -sSL ${latestSlic3r} > ${slic3rReleaseName} \
   && rm -f /Slic3r/releaseInfo.json \
   && mkdir -p /Slic3r/slic3r-dist \
-  && if echo "${slic3rReleaseName}" | grep -qE 'bz2$'; then tar -xjf ${slic3rReleaseName} -C /Slic3r/slic3r-dist --strip-components 1; else chmod +x ${slic3rReleaseName}; ./${slic3rReleaseName} --appimage-extract; cp -a squashfs-root/usr/bin/bin/* /Slic3r/slic3r-dist; fi \
+  && if echo "${slic3rReleaseName}" | grep -qE 'bz2$'; then tar -xjf "${slic3rReleaseName}" -C /Slic3r/slic3r-dist --strip-components 1; else chmod +x ${slic3rReleaseName}; ./${slic3rReleaseName} --appimage-extract; cp -a squashfs-root/usr/bin/bin/* /Slic3r/slic3r-dist; fi \
   && rm -f /Slic3r/${slic3rReleaseName} \
   && rm -rf /var/lib/apt/lists/* \
   && apt-get purge -y --auto-remove jq unzip bzip2 \
