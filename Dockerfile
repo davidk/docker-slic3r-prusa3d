@@ -38,6 +38,9 @@ RUN apt-get update && apt-get install -y \
   mesa-utils \
   xdg-utils \
   locales \
+  libsoup2.4-common \
+  libjavascriptcoregtk-4.0-dev \
+  libwebkit2gtk-4.0-37 \
   --no-install-recommends \
   && rm -rf /var/lib/apt/lists/* \
   && apt-get autoremove -y \
@@ -79,7 +82,7 @@ RUN apt-get update && apt-get install -y \
   && curl -sSL ${latestSlic3r} > ${slic3rReleaseName} \
   && rm -f /Slic3r/releaseInfo.json \
   && mkdir -p /Slic3r/slic3r-dist \
-  && tar -xjf ${slic3rReleaseName} -C /Slic3r/slic3r-dist --strip-components 1 \
+  && if echo "${slic3rReleaseName}" | grep -qE 'bz2$'; then tar -xjf ${slic3rReleaseName} -C /Slic3r/slic3r-dist --strip-components 1; else chmod +x ${slic3rReleaseName}; ./${slic3rReleaseName} --appimage-extract; cp -a squashfs-root/usr/bin/bin/* /Slic3r/slic3r-dist; fi \
   && rm -f /Slic3r/${slic3rReleaseName} \
   && rm -rf /var/lib/apt/lists/* \
   && apt-get purge -y --auto-remove jq unzip bzip2 \
